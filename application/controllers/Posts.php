@@ -7,15 +7,25 @@ class Posts extends CI_Controller {
         $this->load->model('posts_model');
         $this->load->helper('url_helper');
         $this->load->model('comments_model');
+        $this->load->model('users_model');
+        $this->load->model('poll_model');
         $this->load->helper('form');
     }
     
     public function index()
     {
+        //print_r($this->session->all_userdata());
         $data['posts'] = $this->posts_model->get_posts();
         //TODO: FIX CONSTNATS BELOW
         $data['title'] = "Futbolo blogas";
         $data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
+        $data['logged_in'] = isset($_SESSION['logged_in']);
+        $data['username'] = $this->users_model->get_username();
+        $data['poll_items'] = $this->poll_model->get_poll_answers();
+        $data['poll_question'] = $this->poll_model->get_poll_question();
+        $data['poll_voted'] = $this->poll_model->did_vote($this->users_model->get_uid());
+        $data['poll_results'] = $this->poll_model->get_poll_results();
+        $data['user_level'] = $this->users_model->get_user_level();
         
         $this->load->view('templates/header', $data);
         $this->load->view('posts/index', $data);
@@ -30,9 +40,16 @@ class Posts extends CI_Controller {
         //TODO: FIX CONSTNATS BELOW
         $data['title'] = "Futbolo blogas";
         $data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
-        $user_data['logged_in'] = true;
-        //TODO: add userid to session !
-        $user_data['user_id'] = "8J51xTADwwYCIVgaoFSWg5uLsiHGUPmJQJehMn81l7D097A6utDCFSmuHdE9";
+        
+        $data['username'] = $this->users_model->get_username();
+        $data['logged_in'] = isset($_SESSION['logged_in']);
+        $data['poll_items'] = $this->poll_model->get_poll_answers();
+        $data['poll_question'] = $this->poll_model->get_poll_question();
+        $data['poll_voted'] = $this->poll_model->did_vote($this->users_model->get_uid());
+        $data['poll_results'] = $this->poll_model->get_poll_results();
+        $data['user_level'] = $this->users_model->get_user_level();
+        
+        $user_data['user_id'] = isset($_SESSION['user_id']);
         $user_data['post_id'] = $id;
         $user_data['return_to'] = current_url();
 

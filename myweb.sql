@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2016 m. Kov 14 d. 16:41
+-- Generation Time: 2016 m. Kov 15 d. 16:51
 -- Server version: 10.1.10-MariaDB
 -- PHP Version: 5.6.19
 
@@ -42,6 +42,69 @@ INSERT INTO `comments` (`id`, `date`, `text`, `post_id`, `user_id`) VALUES
 (1, 1457950610, 'Pirmasis komentaras !', 1, 1),
 (2, 1457963891, 'antrasis komenturas :O', 1, 1),
 (3, 1457964066, 'lalaila!!', 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Sukurta duomenų struktūra lentelei `polls`
+--
+
+CREATE TABLE `polls` (
+  `id` int(10) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `active` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Sukurta duomenų kopija lentelei `polls`
+--
+
+INSERT INTO `polls` (`id`, `name`, `active`) VALUES
+(1, 'Geriausia pasaulio komanda ?', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Sukurta duomenų struktūra lentelei `poll_answers`
+--
+
+CREATE TABLE `poll_answers` (
+  `id` int(10) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `poll` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Sukurta duomenų kopija lentelei `poll_answers`
+--
+
+INSERT INTO `poll_answers` (`id`, `name`, `poll`) VALUES
+(1, 'Real Madrid', 1),
+(2, 'Barcelona', 1),
+(3, 'Arsenal', 1),
+(4, 'Manchester United', 1),
+(5, 'Bayern Munich', 1),
+(6, 'Juventus', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Sukurta duomenų struktūra lentelei `poll_votes`
+--
+
+CREATE TABLE `poll_votes` (
+  `id` int(10) NOT NULL,
+  `poll` int(10) NOT NULL,
+  `answer` int(10) NOT NULL,
+  `uid` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Sukurta duomenų kopija lentelei `poll_votes`
+--
+
+INSERT INTO `poll_votes` (`id`, `poll`, `answer`, `uid`) VALUES
+(1, 1, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -87,7 +150,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation_code`, `temp_id`, `active`) VALUES
-(1, 'admin', '$2y$10$.wOXMiuR14CYlPZbuMHFAO8u5JWcp6ZbJscbHmmpqud1Y1mMAzTEq', 'dulskasg@gmail.com', 9, '1231', '8J51xTADwwYCIVgaoFSWg5uLsiHGUPmJQJehMn81l7D097A6utDCFSmuHdE9', 1);
+(1, 'admin', '$2y$10$6bjf8Ara/elwRsFtzpDdg.gyZDFA2fgEQhBxaXTQ0F8PNvXPWDJti', 'dulskasg@gmail.com', 9, '1231', '$2y$10$C1danC7nWrIE2VfSzXu0ROjpFTAiC.j6caB7QQ8wdtyUY4wx59TVy', 1);
 
 --
 -- Indexes for dumped tables
@@ -97,6 +160,24 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation
 -- Indexes for table `comments`
 --
 ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `polls`
+--
+ALTER TABLE `polls`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `poll_answers`
+--
+ALTER TABLE `poll_answers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `poll_votes`
+--
+ALTER TABLE `poll_votes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -120,6 +201,21 @@ ALTER TABLE `users`
 --
 ALTER TABLE `comments`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `polls`
+--
+ALTER TABLE `polls`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT for table `poll_answers`
+--
+ALTER TABLE `poll_answers`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `poll_votes`
+--
+ALTER TABLE `poll_votes`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `posts`
 --

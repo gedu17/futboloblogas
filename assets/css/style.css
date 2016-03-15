@@ -41,6 +41,10 @@ html, body {
     margin-top: 30px;
 }
 
+.clear {
+    clear: both;
+}
+
 /* Header */
 
 #header {
@@ -139,6 +143,20 @@ a.header:active {
 
 #pollItems {
     margin-top: 5px;
+}
+
+#pollResults {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.pollResultName {
+    clear:both;
+    float: left;
+}
+
+.pollResultValue {
+    float: right;
 }
 
 #pollQuestion {

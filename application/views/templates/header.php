@@ -22,7 +22,7 @@
                 
                 <div id="headerTextContainer">
                     <div id="headerText">
-                        <a href="#" class="header"><?=$slogan; ?></a>
+                        <a href="<?=base_url();?>" class="header"><?=$slogan; ?></a>
                     </div>
                         
                 </div>

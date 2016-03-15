@@ -5,13 +5,35 @@ class Users_model extends CI_Model {
     public function __construct()
     {
         $this->load->database();
-        //$this->load->session();
     }
     
     public function login($username, $password)
     {
-        
+        if($this->check_username($username))
+        {
+            $q = $this->db->get_where('users', array('username' => $username));
+            $result = $q->result();
+            if(password_verify($password, $result[0]->password))
+            {
+                $temp_id = password_hash(time()+"_"+$username+"_userid", PASSWORD_DEFAULT);
+                $this->db->where('id', $result[0]->id);
+                $this->db->update('users', array('temp_id' => $temp_id));
+                $_SESSION['logged_in'] = true;
+                $_SESSION['user_id'] = $temp_id;
+                //$this->session->set_userdata('logged_in', true);
+                //$this->session->set_userdata('user_id', $temp_id);
+                return true;
+            }
+        }
         return false;
+    }
+    
+    public function logout()
+    {
+        //$this->session->unset_userdata('logged_in');
+        //$this->session->unset_userdata('user_id');
+        unset($_SESSION['logged_in']);
+        unset($_SESSION['user_id']);
     }
     
     public function check_username($str)
@@ -47,5 +69,71 @@ class Users_model extends CI_Model {
                 'active' => 0
         );
         $this->db->insert('users', $data);
+    }
+    
+    public function change_password($password)
+    {
+        $this->db->where('temp_id', $_SESSION['user_id']);
+        $this->db->update('users', array('password' => password_hash($password, PASSWORD_DEFAULT)));
+    }
+    
+    public function get_username()
+    {
+        //$this->session->userdata('user_id')
+        if(isset($_SESSION['user_id']))
+        {
+            $username = $this->db->get_where('users', array('temp_id' => 
+            $_SESSION['user_id']));
+            $res = $username->result();
+            if(count($res) > 0) {
+                return $res[0]->username;
+            }
+        }
+        return "";
+    }
+    
+    public function get_uid()
+    {
+        if(!isset($_SESSION['user_id']))
+        {
+            return 0;
+        }
+        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $res = $q->result();
+        if(count($res) > 0)
+        {
+            return $res[0]->id;
+        }
+    }
+    
+    public function get_user_level()
+    {
+        if(!isset($_SESSION['user_id']))
+        {
+            return 1;
+        }
+        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $res = $q->result();
+        if(count($res) > 0)
+        {
+            return $res[0]->level;
+        }
+    }
+    
+    //Logged in user
+    public function redirect_lin()//loggedin_user()
+    {
+        if(isset($_SESSION['logged_in']))
+        {
+            redirect(base_url(), 'location');
+        }
+    }
+    //Not logged in user
+    public function redirect_nlin()
+    {
+        if(!isset($_SESSION['logged_in']))
+        {
+            redirect(base_url(), 'location');
+        }
     }
 }

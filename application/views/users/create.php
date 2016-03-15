@@ -5,7 +5,7 @@
     <div class="contentContainerContent">
        <?php echo validation_errors(); ?>
 <br /><br />
-        <?php echo form_open('users/create', 'id="registerForm"'); ?>
+        <?php echo form_open('users/create'); ?>
         <input type="text" name="username" value="<?=$username;?>" placeholder="Vartotojo vardas" size="50" required />
         <br /><br />
         <input type="password" name="password" placeholder="Slaptažodis" size="50" required />

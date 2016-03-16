@@ -9,6 +9,7 @@ class Users extends CI_Controller {
         $this->load->model('poll_model');
         $this->load->helper('url_helper');
         $this->load->helper('form');    
+        $this->load->model('template_data_model');
     }
     
     public function index()
@@ -37,28 +38,26 @@ class Users extends CI_Controller {
     
     public function create()
     {
+        $this->load->library('email');
         $this->users_model->redirect_lin();//loggedin_user();
         
         
         $this->load->helper('form');
         $this->load->library('form_validation');
 
-        $data['title'] = "Futbolo blogas";
-        $data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
+        //$data['title'] = "Futbolo blogas";
+        //$data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
         
         $this->form_validation->set_rules('username', 'Vartotojo vardas', 'callback_username_exists');
         $this->form_validation->set_rules('password', 'Slaptažodis', 'matches[passconf]');
         $this->form_validation->set_rules('passconf', 'Slaptažodžio pakartojimas', 'matches[password]');
         $this->form_validation->set_rules('email', 'El. Paštas', 'callback_email_exists');
 
-        $data['username'] = $this->input->post('username');
-        $data['email'] = $this->input->post('email');
-        $data['logged_in'] = isset($_SESSION['logged_in']);
-        $data['poll_items'] = $this->poll_model->get_poll_answers();
-        $data['poll_question'] = $this->poll_model->get_poll_question();
-        $data['poll_voted'] = $this->poll_model->did_vote($this->users_model->get_uid());
-        $data['poll_results'] = $this->poll_model->get_poll_results();
-        $data['user_level'] = $this->users_model->get_user_level();
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $this->template_data_model->use_register();
+        $data = $this->template_data_model->get_data();
+        
         
         if ($this->form_validation->run() === FALSE)
         {
@@ -73,11 +72,119 @@ class Users extends CI_Controller {
             $this->load->view('users/created');
             $this->load->view('templates/sidebar', $data);
             $this->load->view('templates/footer');
-            $this->users_model->create($this->input->post('username'),
+            $act_code = $this->users_model->create($this->input->post('username'),
                     $this->input->post('password'), $this->input->post('email'));
+            
+            $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
+            $this->email->to($this->input->post('email')); 
+            //$this->email->cc('another@another-example.com'); 
+            //$this->email->bcc('them@their-example.com'); 
+
+            $this->email->subject('Registracija puslapyje FutboloBlogas.lt');
+            $msg = "Sveiki, ".$this->input->post('username').". \n\n".
+                    "Jūsų aktyvacijos nuoroda <a href=\"".
+                    site_url('users/activate/'.$act_code)."\">".
+                    site_url('users/activate/'.$act_code)."</a>";
+            $this->email->message($msg);	
+
+            $this->email->send();
+
+            echo $this->email->print_debugger();
             /*$this->news_model->set_news();
             $this->load->view('news/success');*/
         }
+    }
+    
+    public function activate($code)
+    {
+        echo "KODAS YRA ".$code;
+    }
+    
+    public function remind_password()
+    {
+        $this->load->library('email');
+        $this->users_model->redirect_lin();
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $this->template_data_model->use_register();
+        $data = $this->template_data_model->get_data();
+        
+        $this->form_validation->set_rules('username', 'Vartotojo vardas', 'callback_check_remind_password');
+        
+        if ($this->form_validation->run() === FALSE)
+        {
+            $this->load->view('templates/header', $data);
+            $this->load->view('users/remind_password');
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('templates/footer');
+        }
+        else
+        {
+            
+            //TODO: UNCOMMENT ME
+            /*$code = password_hash(time()+"_"+$this->input->post('username')+"_"+
+                    $this->input->post('email'), PASSWORD_DEFAULT);
+            //TODO: add code to db
+            $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
+            $this->email->to($this->input->post('email')); 
+
+            $this->email->subject('Registracija puslapyje FutboloBlogas.lt');
+            $msg = "Sveiki, ".$this->input->post('username').". \n\n".
+                    "Nuoroda slaptažodžio atstatymui yra <a href=\"".
+                    site_url('users/restore_password/'.$code)."\">".
+                    site_url('users/restore_password/'.$code)."</a>. \n".
+                    "Jeigu neprašėte slaptažodžio atstatymo, ignoruokite šį laišką.";
+            $this->email->message($msg);	
+
+            $this->email->send();
+
+            echo $this->email->print_debugger();*/
+            
+            $this->load->view('templates/header', $data);
+            $this->load->view('users/password_reminded');
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('templates/footer');
+        }
+    }
+    
+    public function manage()
+    {
+        $this->users_model->redirect_na();
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $this->template_data_model->use_users();
+        $data = $this->template_data_model->get_data();
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('users/list', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/footer');
+    
+    }
+    
+    public function delete($id)
+    {
+        $this->users_model->redirect_na();
+        $this->users_model->delete_user($id);
+        redirect(site_url('admin/users/manage'), 'location');
+        
+    }
+    
+    public function admin_activate($id)
+    {
+        $this->users_model->redirect_na();
+        $this->users_model->activate_user($id);
+        redirect(site_url('admin/users/manage'), 'location');
+    }
+    
+    public function admin_deactivate($id)
+    {
+        $this->users_model->redirect_na();
+        $this->users_model->deactivate_user($id);
+        redirect(site_url('admin/users/manage'), 'location');
     }
     
     public function change_password()
@@ -86,18 +193,13 @@ class Users extends CI_Controller {
         $this->load->helper('form');
         $this->load->library('form_validation');
 
-        $data['title'] = "Futbolo blogas";
-        $data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $data = $this->template_data_model->get_data();
         
         $this->form_validation->set_rules('oldpassword', 'Dabartinis slaptažodis', 'callback_current_password');
         $this->form_validation->set_rules('password', 'Naujas slaptažodis', 'matches[passconf]');
         $this->form_validation->set_rules('passconf', 'Naujo slaptažodžio pakartojimas', 'matches[password]');
-
-        $data['logged_in'] = isset($_SESSION['logged_in']);
-        $data['username'] = $this->users_model->get_username();
-        $data['poll_items'] = $this->poll_model->get_poll_answers();
-        $data['poll_question'] = $this->poll_model->get_poll_question();
-        $data['poll_voted'] = $this->poll_model->did_vote($this->users_model->get_uid());
         
         if ($this->form_validation->run() === FALSE)
         {
@@ -115,9 +217,8 @@ class Users extends CI_Controller {
             $this->load->view('templates/sidebar', $data);
             $this->load->view('templates/footer');
         }
-        
     }    
-    
+    //TODO: remove db to model
     public function current_password($password)
     {
         $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
@@ -133,6 +234,17 @@ class Users extends CI_Controller {
     public static function get_username($id)
     {
         return $this->users_model->get_username($id);
+    }
+    
+    public function check_remind_password($username)
+    {
+        $email = $this->input->post('email');
+        if($this->users_model->check_username($username) && $this->users_model->check_email($email))
+        {
+            return true;
+        }
+        $this->form_validation->set_message('check_remind_password', 'Neteisingi duomenys.');
+        return false;
     }
     
     public function username_exists($username)    

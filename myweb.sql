@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2016 m. Kov 15 d. 16:51
+-- Generation Time: 2016 m. Kov 16 d. 16:23
 -- Server version: 10.1.10-MariaDB
 -- PHP Version: 5.6.19
 
@@ -126,7 +126,9 @@ CREATE TABLE `posts` (
 
 INSERT INTO `posts` (`id`, `title`, `date`, `text`, `active`) VALUES
 (1, 'Testas', 1457950538, 'Testas12313', 1),
-(2, 'Testas2', 1457950590, 'Testavone12313123131', 1);
+(2, 'Testas2', 1457950590, 'Testavone12313123131', 1),
+(3, 'Testas123', 1458136801, 'nwa ! ! ! ! ! ! ))) ) ) ) ) ) ) )', 1),
+(4, 'Q XzzzQ q a s A', 1458136840, 'zxzz\r\nasd\r\nasd\r\nasd\r\nasdazx', 1);
 
 -- --------------------------------------------------------
 
@@ -150,7 +152,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation_code`, `temp_id`, `active`) VALUES
-(1, 'admin', '$2y$10$6bjf8Ara/elwRsFtzpDdg.gyZDFA2fgEQhBxaXTQ0F8PNvXPWDJti', 'dulskasg@gmail.com', 9, '1231', '$2y$10$C1danC7nWrIE2VfSzXu0ROjpFTAiC.j6caB7QQ8wdtyUY4wx59TVy', 1);
+(1, 'admin', '$2y$10$6bjf8Ara/elwRsFtzpDdg.gyZDFA2fgEQhBxaXTQ0F8PNvXPWDJti', 'dulskasg@gmail.com', 9, '1231', '$2y$10$TwgNc9COUGs3d.ucXlE.FOj5SWP8iMfmJTjnYS2iqwY7sX4qnJ/kq', 1);
 
 --
 -- Indexes for dumped tables
@@ -220,12 +222,12 @@ ALTER TABLE `poll_votes`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -58,17 +58,19 @@ class Users_model extends CI_Model {
     
     public function create($username, $password, $email)
     {
+        $act_code = password_hash(time()+"_"+$username+"_ach",
+                        PASSWORD_DEFAULT);
         $data = array(
                 'username' => $username,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
                 'email' => $email,
                 'level' => 1,
-                'activation_code' => password_hash(time()+"_"+$username+"_ach",
-                        PASSWORD_DEFAULT),
+                'activation_code' => $act_code,
                 'temp_id' => '',
                 'active' => 0
         );
         $this->db->insert('users', $data);
+        return $act_code;
     }
     
     public function change_password($password)
@@ -120,6 +122,33 @@ class Users_model extends CI_Model {
         }
     }
     
+    public function delete_user($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete('users');
+    }
+    
+    public function activate_user($id)
+    {
+        $data = array('active' => 1);
+        $this->db->where('id', $id);
+        $this->db->update('users', $data);
+    }
+    
+    public function deactivate_user($id)
+    {
+        $data = array('active' => 0);
+        $this->db->where('id', $id);
+        $this->db->update('users', $data);
+    }
+    
+    public function get_users()
+    {
+        $q = $this->db->get('users');
+        return $q->result();
+        
+    }
+    
     //Logged in user
     public function redirect_lin()//loggedin_user()
     {
@@ -132,6 +161,15 @@ class Users_model extends CI_Model {
     public function redirect_nlin()
     {
         if(!isset($_SESSION['logged_in']))
+        {
+            redirect(base_url(), 'location');
+        }
+    }
+    
+    //User without admin privilleges
+    public function redirect_na()
+    {
+        if($this->get_user_level() != 9)
         {
             redirect(base_url(), 'location');
         }

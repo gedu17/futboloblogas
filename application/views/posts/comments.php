@@ -8,6 +8,16 @@ foreach($comments as $comment) { ?>
     <div class="commentTime">
         <?=date("Y-m-d H:i:s", $comment->date); ?>
     </div>
+    <?php
+    if($user_level == 9) {
+    ?>
+    
+    <div class="commentDelete"><a href="/admin/comments/delete/<?=$comment->id;?>">
+        <button type="button" class="btn btn-xs btn-default">Ištrinti</button></a>
+    </div>
+    <?php
+    }
+    ?>
     <div class="commentText">
         <?=$comment->text;?>
     </div>

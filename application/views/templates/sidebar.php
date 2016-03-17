@@ -4,22 +4,30 @@
                 <?php echo form_open('poll/vote'); ?>
                     <div id="pollQuestion"><?=$poll_question;?></div>
                     <?php
-                    if(!$poll_voted) { ?>
+                    if(!$poll_voted) { 
+                    ?>
                     <div id="pollItems">
                        
-                        <?php  foreach($poll_items as $item) { ?>
+                        <?php
+                        foreach($poll_items as $item) { 
+                        ?>
                         <input type="radio" name="poll" value="<?=$item->id;?>" /> <label><?=$item->name;?></label> <br />
-                        <?php } ?>
-                        
-                        <!--<input type="radio" name="poll" value="2" /> <label>Barcelona</label> <br />
-                        <input type="radio" name="poll" value="3" /> <label>Arsenal</label> <br />
-                        <input type="radio" name="poll" value="4" /> <label>Manchester United</label> <br />
-                        <input type="radio" name="poll" value="5" /> <label>Juventus</label> <br />
-                        <input type="radio" name="poll" value="6" /> <label>Bayern</label> <br />-->
+                        <?php 
+                        } 
+                        ?>
                     </div>
                     <div id="pollVote">
-                        <input type="submit" class="btn btn-primary btn-block" name="vote"
-                               value="Balsuoti" <?php if(!$logged_in) { echo "disabled"; } ?> />
+                        <button type="button" name="voteButton" id="voteButton" class="btn btn-primary btn-block"
+                        
+                        <?php
+                        if(!$logged_in) {
+                            echo "disabled";
+                        } 
+                        ?>
+                        >Balsuoti</button>
+                        
+                        
+                        <!--<input type="submit" style="margin-left: -4px;" class="btn btn-primary btn-block" name="vote" value="Balsuoti"-->
                     </div>
                 </form>
                     <?php
@@ -27,56 +35,77 @@
                         else 
                         { 
                         ?>
-                    <div id="pollResults">
-                        <?php
+                            <div id="pollResults">
+                            <?php
                             $sum = array_sum($poll_results);
-                            foreach($poll_results as $poll_item => $poll_value)
-                            { ?>
-                        <div class="pollResultName"><?=$poll_item;?></div>
-                        <div class="pollResultValue" style=""><?=$poll_value;?> / <?=ceil($poll_value/$sum * 100);?>%</div>
-                        <?php } 
-                        
-                        } ?>
+                            foreach($poll_results as $poll_item => $poll_value) {
+                            ?>
+                            <div class="pollResultName"><?=$poll_item;?></div>
+                            <div class="pollResultValue" style=""><?=$poll_value;?> / <?=ceil($poll_value/$sum * 100);?>%</div>
+                        <?php
+                            } 
+                        } 
+                        ?>
                     </div>
                 <div class="clear"></div>
-            <!--</div>-->
             <hr class="contentContainerHr" />
-            <?php if(!$logged_in) { ?>
+            <?php 
+            if(!$logged_in) {
+            ?>
             <div id="loginBar">
-                    <?php echo form_open('users/login'); ?>
+                <?php echo form_open('users/login'); ?>
                     <div class="col-xs-12">
                     <input type="text" class="form-control input-sm" name="username" placeholder="Vartotojo vardas" required />
                     </div>
                     <div class="col-xs-12">
                     <input type="password" class="form-control input-sm" name="password" placeholder="Slaptažodis" required />
                     </div>
-                    <div class="col-xs-12">
-                        <input id="loginSubmit" class="btn btn-sm btn-primary btn-block" 
-                               type="submit" name="login" value="Prisijungti" />
+                    <div class="col-xs-12" style="margin-left: -4px;">
+                        <input id="loginSubmit" class="btn btn-sm btn-primary btn-block" type="submit" name="login" value="Prisijungti" />
                     </div>
                     <a href="/users/remind_password">Slaptažodžio priminimas</a><br />
-                    <a href="/users/create"> Užsiregistruoti </a>
+                    <a href="/users/create">Užsiregistruoti </a>
                 </form>
             </div>
             <hr class="contentContainerHr" />
-            <?php } else { ?>
+            <?php
+            } else {                
+            ?>
             <div id="greetBar">
                 <div id="greetBarGreet">Sveiki, <?=$username;?>!</div>
             </div>
-            <div id="loginLinks">
-                <?php if($user_level == 9) { ?>
-                <a href="/admin/posts/create">Sukurti įrašą</a><br />
-                <a href="/admin/posts/manage">Tvarkyti įrašus</a><br />
-                <a href="/admin/poll/create">Sukurti apklausą</a><br />
-                <a href="/admin/poll/manage">Tvarkyti apklausas</a><br />
-                <a href="/admin/users/manage">Tvarkyti vartotojus</a><br />
-                <?php } ?>
-                <a href="/users/change_password">Pasikeisti slaptažodį</a><br />
-                <a href="/users/logout">Atsijungti</a><br />
-            </div>
-            <hr class="contentContainerHr" />
-            <?php } ?>
-        </div>
+            <div class="col-xs-12" style="margin-left: 4px;">
+              <div class="sidebar-nav">
+                <div class="navbar navbar-default" role="navigation">
+                  <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                      <span class="sr-only">Navigacijos jungliklis</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                  </div>
+                  <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <!-- class="active" -->
+                        <?php if($user_level == 9) { ?>
+                        <li><a href="/admin/posts/create">Sukurti įrašą</a></li>
+                        <li><a href="/admin/posts/manage">Tvarkyti įrašus</a></li>
+                        <li><a href="/admin/poll/create">Sukurti apklausą</a></li>
+                        <li><a href="/admin/poll/manage">Tvarkyti apklausas</a></li>
+                        <li><a href="/admin/users/manage">Tvarkyti vartotojus</a></li>
+                        <?php } ?>
+                        <li><a href="/users/change_password">Pasikeisti slaptažodį</a></li>
+                        <li><a href="/users/logout">Atsijungti</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+          </div>
+        <?php
+        }
+        ?>
         <div id="spacer">&nbsp;</div>
+        
     </div>            
 </div>

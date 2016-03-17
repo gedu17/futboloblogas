@@ -31,15 +31,14 @@ class Posts extends CI_Controller {
         $this->template_data_model->use_post($id);
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
+        $this->template_data_model->use_comments($id);
         $data = $this->template_data_model->get_data();        
-
-        $comments['comments'] = $this->comments_model->get_comments($id, 0, 15);
 
         $this->load->view('templates/header', $data);
         if($data['post']->active == 1)
         {
             $this->load->view('posts/post', $data);
-            $this->load->view('posts/comments', $comments);
+            $this->load->view('posts/comments', $data);
             $this->load->view('posts/comment_form', $data);
         }
         else
@@ -59,10 +58,6 @@ class Posts extends CI_Controller {
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
         $data = $this->template_data_model->get_data();
-        $title = $this->input->post('title');
-        $text = $this->input->post('text');
-        $data['form_title'] = $title;
-        $data['form_text'] = $text;
         
         $this->form_validation->set_rules('title', 'Pavadinimas', 'required');
         
@@ -75,7 +70,8 @@ class Posts extends CI_Controller {
         }
         else
         {
-            $this->posts_model->add_post($title, $text);
+            $this->users_model->redirect_na();
+            $this->posts_model->add_post($this->input->post('title'), $this->input->post('text'));
             redirect(site_url('admin/posts/manage'), 'location');
         }
     }
@@ -103,7 +99,6 @@ class Posts extends CI_Controller {
         $post = $this->posts_model->get_post($id);
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
-        //$this->template_data_model->use_register();
         $data = $this->template_data_model->get_data();
         $title = $this->input->post('title');
         $text = $this->input->post('text');
@@ -123,6 +118,7 @@ class Posts extends CI_Controller {
         }
         else
         {
+            $this->users_model->redirect_na();
             $this->posts_model->update_post($id, $title, $text);
             redirect(site_url('admin/posts/manage'), 'location');
         }
@@ -131,7 +127,6 @@ class Posts extends CI_Controller {
     public function delete($id)
     {
         $this->users_model->redirect_na();
-        
         $this->posts_model->delete_post($id);
         redirect(site_url('admin/posts/manage'), 'location');
     }

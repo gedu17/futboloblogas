@@ -21,6 +21,12 @@ html, body {
     margin: auto;
 }
 
+.inputSpacing {
+    margin-bottom: 20px;
+}
+
+
+
 #mainContent {
     float: left;
     position:absolute;
@@ -143,6 +149,7 @@ a.header:active {
 
 #pollItems {
     margin-top: 5px;
+    margin-left: 7px;
 }
 
 #pollResults {
@@ -179,10 +186,6 @@ a.header:active {
     margin-left: 15px;
     text-align: center;
 }
-#loginLinks {
-    text-align: left;
-    margin-left: 10px;
-}
 
 #greetBarGreet {
     font-size: 18px;
@@ -208,7 +211,8 @@ a.header:active {
 
 .contentContainerContent {
     clear: both;
-    margin-left: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .contentContainerTitle {
@@ -235,6 +239,7 @@ a.header:active {
 /* Comments */
 #contentComments {
     margin-left: 15px;
+    margin-right: 15px;
 }
 
 #contentCommentsTitle {
@@ -278,6 +283,13 @@ a.header:active {
     margin-left: 15px;
     margin-bottom: 50px;
 }
+
+.commentDelete {
+    float: right;
+    margin-right: 25px;
+}
+
+
 
 /* Content Container Links */
 

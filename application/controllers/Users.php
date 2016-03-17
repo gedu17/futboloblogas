@@ -14,13 +14,8 @@ class Users extends CI_Controller {
     
     public function index()
     {
-        /*$data['title'] = "PATAISYK MANE";
-        $this->load->view('header', $data);
-        $this->load->view('footer');*/
-        //$this->session->unset_userdata('logged_in');
-        //$data = $this->session->userdata('logged_in');
-        //echo "loggedin = ".$data;
-        echo "TODO: ENCAPSULATE ME";
+        $this->users_model->redirect_lin();
+        $this->users_model->redirect_nlin();
     }
     
     public function logout()
@@ -39,14 +34,11 @@ class Users extends CI_Controller {
     public function create()
     {
         $this->load->library('email');
-        $this->users_model->redirect_lin();//loggedin_user();
+        $this->users_model->redirect_lin();
         
         
         $this->load->helper('form');
         $this->load->library('form_validation');
-
-        //$data['title'] = "Futbolo blogas";
-        //$data['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
         
         $this->form_validation->set_rules('username', 'Vartotojo vardas', 'callback_username_exists');
         $this->form_validation->set_rules('password', 'Slaptažodis', 'matches[passconf]');
@@ -68,6 +60,7 @@ class Users extends CI_Controller {
         }
         else
         {
+            $this->users_model->redirect_lin();
             $this->load->view('templates/header', $data);
             $this->load->view('users/created');
             $this->load->view('templates/sidebar', $data);
@@ -97,6 +90,7 @@ class Users extends CI_Controller {
     
     public function activate($code)
     {
+        $this->users_model->redirect_lin();
         echo "KODAS YRA ".$code;
     }
     
@@ -123,7 +117,7 @@ class Users extends CI_Controller {
         }
         else
         {
-            
+            $this->users_model->redirect_lin();
             //TODO: UNCOMMENT ME
             /*$code = password_hash(time()+"_"+$this->input->post('username')+"_"+
                     $this->input->post('email'), PASSWORD_DEFAULT);
@@ -210,6 +204,7 @@ class Users extends CI_Controller {
         }
         else
         {
+            $this->users_model->redirect_nlin();
             $this->users_model->change_password($this->input->post('password'));
             
             $this->load->view('templates/header', $data);
@@ -218,12 +213,10 @@ class Users extends CI_Controller {
             $this->load->view('templates/footer');
         }
     }    
-    //TODO: remove db to model
+    
     public function current_password($password)
     {
-        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
-        $res = $q->result();
-        if(count($res) > 0 && password_verify($password, $res[0]->password))
+        if($this->users_model->check_password($password))
         {
             return true;
         }

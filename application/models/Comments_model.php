@@ -40,4 +40,21 @@ class Comments_model extends CI_Model {
         );
         $this->db->insert('comments', $data);
     }
+    
+    public function delete_comment($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete('comments');
+    }
+    
+    public function check_comment($uid, $pid)
+    {
+        $check_user = $this->db->get_where('users', array('temp_id' => $uid));
+        $check_post = $this->db->get_where('posts', array('id' => $pid));
+        if(count($check_user->result()) > 0 && count($check_post->result()) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }

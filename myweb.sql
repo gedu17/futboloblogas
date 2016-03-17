@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2016 m. Kov 16 d. 16:23
+-- Generation Time: 2016 m. Kov 17 d. 16:13
 -- Server version: 10.1.10-MariaDB
 -- PHP Version: 5.6.19
 
@@ -39,9 +39,9 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`id`, `date`, `text`, `post_id`, `user_id`) VALUES
-(1, 1457950610, 'Pirmasis komentaras !', 1, 1),
-(2, 1457963891, 'antrasis komenturas :O', 1, 1),
-(3, 1457964066, 'lalaila!!', 1, 1);
+(3, 1457964066, 'lalaila!!', 1, 1),
+(4, 1458222310, 'Mano komentaras :))))', 1, 1),
+(5, 1458222428, 'NAISLAAAAAAAA', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -60,7 +60,7 @@ CREATE TABLE `polls` (
 --
 
 INSERT INTO `polls` (`id`, `name`, `active`) VALUES
-(1, 'Geriausia pasaulio komanda ?', 1);
+(2, 'Nauja apklausa1', 1);
 
 -- --------------------------------------------------------
 
@@ -79,12 +79,10 @@ CREATE TABLE `poll_answers` (
 --
 
 INSERT INTO `poll_answers` (`id`, `name`, `poll`) VALUES
-(1, 'Real Madrid', 1),
-(2, 'Barcelona', 1),
-(3, 'Arsenal', 1),
-(4, 'Manchester United', 1),
-(5, 'Bayern Munich', 1),
-(6, 'Juventus', 1);
+(7, 'Gerai atrodo?2', 2),
+(8, 'Labai gerai?3', 2),
+(9, 'Nelabai gerai :(4', 2),
+(10, 'Baisiai :&lt;5', 2);
 
 -- --------------------------------------------------------
 
@@ -104,7 +102,7 @@ CREATE TABLE `poll_votes` (
 --
 
 INSERT INTO `poll_votes` (`id`, `poll`, `answer`, `uid`) VALUES
-(1, 1, 3, 1);
+(4, 2, 8, 1);
 
 -- --------------------------------------------------------
 
@@ -152,7 +150,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation_code`, `temp_id`, `active`) VALUES
-(1, 'admin', '$2y$10$6bjf8Ara/elwRsFtzpDdg.gyZDFA2fgEQhBxaXTQ0F8PNvXPWDJti', 'dulskasg@gmail.com', 9, '1231', '$2y$10$TwgNc9COUGs3d.ucXlE.FOj5SWP8iMfmJTjnYS2iqwY7sX4qnJ/kq', 1);
+(1, 'admin', '$2y$10$93bJxR3S4nzKR6VJAWRCMOdRZCxvVehuZV.cLne0CxmqJTKtM1FBi', 'dulskasg@gmail.com', 9, '1231', '$2y$10$zK5XKVkrCFWP.UGNXeUi0O4AJCKaLsJgDW/LKZVGLkBdqMKs7Ivjy', 1);
 
 --
 -- Indexes for dumped tables
@@ -202,32 +200,32 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `polls`
 --
 ALTER TABLE `polls`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `poll_answers`
 --
 ALTER TABLE `poll_answers`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `poll_votes`
 --
 ALTER TABLE `poll_votes`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -7,6 +7,76 @@ class Poll_model extends CI_Model {
         $this->load->database();
     }
     
+    public function add_poll($name, $answers)
+    {
+        $data = array('name' => $name, 'active' => 1);
+        $this->db->update('polls', array('active' => 0));
+        $this->db->insert('polls', $data);
+        $q = $this->db->get_where('polls', array('active' => 1));
+        $res = $q->result();
+        
+        for($i = 0; $i < count($answers); $i++)
+        {
+            $this->db->insert('poll_answers', array('name' => $answers[$i], 
+                'poll' => $res[0]->id));
+        }
+    }
+    
+    public function update_poll($name, $answers, $id)
+    {
+        $data = array('name' => $name);
+        //$this->db->update('polls', array('active' => 0));
+        $this->db->where('id', $id);
+        $this->db->update('polls', $data);
+        
+        //$q = $this->db->get_where('polls', array('active' => 1));
+        //$res = $q->result();
+        
+        for($i = 0; $i < count($answers); $i++)
+        {
+            $this->db->where('id', $answers[$i]['id']);
+            $this->db->update('poll_answers', array('name' => $answers[$i]['name']));
+        }
+    }
+    
+    public function delete_poll($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete('polls');
+        $this->db->where('poll', $id);
+        $this->db->delete('poll_votes');
+        $this->db->where('poll', $id);
+        $this->db->delete('poll_answers');
+    }
+    
+    public function activate($id)
+    {
+        $this->db->where('active', 1);
+        $this->db->update('polls', array('active' => 0));
+        $this->db->where('id', $id);
+        $this->db->update('polls', array('active' => 1));
+    }
+    
+    public function get_poll_name($id)
+    {
+        $q = $this->db->get_where('polls', array('id' => $id));
+        $res = $q->result();
+        return $res[0]->name;
+    }
+
+    public function get_polls()
+    {
+        
+        $q = $this->db->order_by('id', 'DESC')->get('polls');
+        $res = $q->result();
+        foreach($res as $item)
+        {
+            $tmp = $this->db->get_where('poll_answers', array('poll' => $item->id));
+            $item->answer_count = count($tmp->result());
+        }
+        return $res;
+    }
+
     public function did_vote($uid)
     {
         $poll = $this->get_current_poll();
@@ -37,8 +107,19 @@ class Poll_model extends CI_Model {
         $this->db->insert('poll_votes', $data);
     }
     
-    public function get_poll_answers()
+    public function get_poll_answers($id = NULL)
     {
+        if($id)
+        {
+            $data = array();
+            $ans = $this->db->get_where('poll_answers', array('poll' => $id));
+            foreach($ans->result() as $item)
+            {
+                array_push($data, array('name' => $item->name, 'id' => $item->id));
+            }
+            return $data;
+        }
+        
         $q = $this->db->get_where('poll_answers', array('poll' => $this->get_current_poll()));
         return $q->result();
     }

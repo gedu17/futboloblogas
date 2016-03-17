@@ -46,6 +46,17 @@ class Users_model extends CI_Model {
         return false;
     }
     
+    public function check_password($password)
+    {
+        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $res = $q->result();
+        if(count($res) > 0 && password_verify($password, $res[0]->password))
+        {
+            return true;
+        }
+        return false;
+    }
+    
     public function check_email($str)
     {
         $q = $this->db->get_where('users', array('email' => $str));

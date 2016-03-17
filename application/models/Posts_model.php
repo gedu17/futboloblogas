@@ -33,21 +33,6 @@ class Posts_model extends CI_Model {
             'active' => 0, 'comments' => 0);
     }
     
-    /*public function title_exists($title)
-    {
-        echo "title = ".$title;
-        $q = $this->db->get_where('posts', array('title' => $title));
-        
-        $res = $q->result();
-        print_r($res);
-        if(count($res) > 0)
-        {
-            return true;
-        }
-        return false;
-    
-    }*/
-    
     public function add_post($title, $text)
     {
         $data = array(

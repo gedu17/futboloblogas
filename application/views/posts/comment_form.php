@@ -2,11 +2,8 @@
 <?php if($logged_in) { ?>
 <?php echo validation_errors(); ?>
     <div id="commentWrite">
-        <?php echo form_open('comments/create'); ?>
-        <textarea name="comment" class="form-control" placeholder="Jūsų komentaras" rows="4" cols="50" required></textarea><br />
-            <input type="hidden" name="post_id" value="<?=$post_id;?>" />
-            <input type="hidden" name="user_id" value="<?=$user_id;?>" />
-            <input type="hidden" name="return_to" value="<?=$return_to;?>" />
+        <?php echo form_open('comments/create/'.$post_id); ?>
+        <textarea name="comment" class="form-control inputSpacing" placeholder="Jūsų komentaras" rows="4" required></textarea><br />
             <input type="submit" name="submit" class="btn btn-primary" value="Komentuoti" />
             
         </form>

@@ -7,6 +7,7 @@ class Template_data_model extends CI_Model {
         $this->load->model('users_model');
         $this->load->model('poll_model');
         $this->load->model('posts_model');
+        $this->load->model('comments_model');
         $this->array = array();
         //TODO: FIX
         $this->array['title'] = "Futbolo blogas";
@@ -18,19 +19,23 @@ class Template_data_model extends CI_Model {
     {
         $this->array['logged_in'] = isset($_SESSION['logged_in']);
         $this->array['username'] = $this->users_model->get_username();
-        $this->array['user_level'] = $this->users_model->get_user_level();
-        $this->array['user_id'] = "";
-        if(isset($_SESSION['user_id']))
-        {
-            $this->array['user_id'] = $_SESSION['user_id'];
-        }
-        
+        $this->array['user_level'] = $this->users_model->get_user_level();        
     }
     
     public function use_users()
     {
         $this->array['users'] = $this->users_model->get_users();
         
+    }
+    
+    public function use_polls()
+    {
+        $this->array['polls'] = $this->poll_model->get_polls();
+    }
+    
+    public function use_comments($id)
+    {
+        $this->array['comments'] = $this->comments_model->get_comments($id, 0, 15);
     }
     
     public function use_register()

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.1
+-- version 4.3.9
 -- http://www.phpmyadmin.net
 --
--- Host: 127.0.0.1
--- Generation Time: 2016 m. Kov 17 d. 16:13
--- Server version: 10.1.10-MariaDB
--- PHP Version: 5.6.19
+-- Host: localhost
+-- Generation Time: 2016 m. Kov 18 d. 16:50
+-- Server version: 10.0.24-MariaDB
+-- PHP Version: 5.5.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -14,10 +14,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
--- Database: `myweb`
+-- Database: `pinkpong_g`
 --
 
 -- --------------------------------------------------------
@@ -26,13 +26,13 @@ SET time_zone = "+00:00";
 -- Sukurta duomenų struktūra lentelei `comments`
 --
 
-CREATE TABLE `comments` (
+CREATE TABLE IF NOT EXISTS `comments` (
   `id` int(10) NOT NULL,
   `date` int(20) NOT NULL,
   `text` text NOT NULL,
   `post_id` int(10) NOT NULL,
   `user_id` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `comments`
@@ -49,11 +49,11 @@ INSERT INTO `comments` (`id`, `date`, `text`, `post_id`, `user_id`) VALUES
 -- Sukurta duomenų struktūra lentelei `polls`
 --
 
-CREATE TABLE `polls` (
+CREATE TABLE IF NOT EXISTS `polls` (
   `id` int(10) NOT NULL,
   `name` varchar(255) NOT NULL,
   `active` int(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `polls`
@@ -68,11 +68,11 @@ INSERT INTO `polls` (`id`, `name`, `active`) VALUES
 -- Sukurta duomenų struktūra lentelei `poll_answers`
 --
 
-CREATE TABLE `poll_answers` (
+CREATE TABLE IF NOT EXISTS `poll_answers` (
   `id` int(10) NOT NULL,
   `name` varchar(255) NOT NULL,
   `poll` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `poll_answers`
@@ -90,19 +90,27 @@ INSERT INTO `poll_answers` (`id`, `name`, `poll`) VALUES
 -- Sukurta duomenų struktūra lentelei `poll_votes`
 --
 
-CREATE TABLE `poll_votes` (
+CREATE TABLE IF NOT EXISTS `poll_votes` (
   `id` int(10) NOT NULL,
   `poll` int(10) NOT NULL,
   `answer` int(10) NOT NULL,
   `uid` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `poll_votes`
 --
 
 INSERT INTO `poll_votes` (`id`, `poll`, `answer`, `uid`) VALUES
-(4, 2, 8, 1);
+(4, 2, 8, 1),
+(5, 2, 9, 1),
+(6, 2, 10, 1),
+(7, 2, 7, 1),
+(8, 2, 9, 1),
+(9, 2, 9, 1),
+(10, 2, 9, 1),
+(11, 2, 8, 4),
+(12, 2, 10, 5);
 
 -- --------------------------------------------------------
 
@@ -110,13 +118,13 @@ INSERT INTO `poll_votes` (`id`, `poll`, `answer`, `uid`) VALUES
 -- Sukurta duomenų struktūra lentelei `posts`
 --
 
-CREATE TABLE `posts` (
+CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(10) NOT NULL,
   `title` varchar(255) NOT NULL,
   `date` int(20) NOT NULL,
   `text` text NOT NULL,
   `active` int(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `posts`
@@ -134,7 +142,7 @@ INSERT INTO `posts` (`id`, `title`, `date`, `text`, `active`) VALUES
 -- Sukurta duomenų struktūra lentelei `users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) NOT NULL,
   `username` varchar(255) CHARACTER SET latin1 NOT NULL,
   `password` varchar(255) CHARACTER SET latin1 NOT NULL,
@@ -142,15 +150,18 @@ CREATE TABLE `users` (
   `level` int(1) NOT NULL DEFAULT '1',
   `activation_code` varchar(255) CHARACTER SET latin1 NOT NULL,
   `temp_id` varchar(255) NOT NULL,
+  `password_recovery` varchar(255) NOT NULL,
   `active` int(1) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Sukurta duomenų kopija lentelei `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation_code`, `temp_id`, `active`) VALUES
-(1, 'admin', '$2y$10$93bJxR3S4nzKR6VJAWRCMOdRZCxvVehuZV.cLne0CxmqJTKtM1FBi', 'dulskasg@gmail.com', 9, '1231', '$2y$10$zK5XKVkrCFWP.UGNXeUi0O4AJCKaLsJgDW/LKZVGLkBdqMKs7Ivjy', 1);
+INSERT INTO `users` (`id`, `username`, `password`, `email`, `level`, `activation_code`, `temp_id`, `password_recovery`, `active`) VALUES
+(1, 'admin', '$2y$10$F/pOtNAPN9KTe1R6tH8fCukqYxbslXa84vOYx/ety7PJzHHa3hKBy', 'dulskasg@gmail.com', 9, '1231', '7b0089f4e2a4a177c25a0f2cb915d462443e75fb2919782770a7501216fcf5ee', '', 1),
+(4, 'testas', '$2y$10$6lgCecwUOPsJlUHbak.twuO9R9niN0HTEylJTnaG70wUP0xRK4Hfu', 'naujokas33@dtiltas.lt', 1, '8f8c4320d5e752e109b33193649eaf885dfd4845322f5b16aa1d92f4522921e4', '16467733e30cb0830cb3a5a511743302755af05603fa75f62075373886eac8a0', '', 1),
+(5, 'testas2', '$2y$10$IemxkvVuW/cMFkvXK8.zvOmCT0LIDGRWnw/GY9jYt8ppvLErUoxqS', 'naujokas3@yahoo.com', 1, '09b68af4f3640f5c4bba09b4d5bf9cbbfcf8b63c27ab893e817ed94c5ec586fa', '10e013e5e50e16c4a75c50e33b02c7dac9411524831d4f66ba4bbbfb8dd8a0bb', '94c5d34bc0b11a38609106043c4aaa98f1752bc1a682b4215ff19f87b4c3b573', 1);
 
 --
 -- Indexes for dumped tables
@@ -200,32 +211,32 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `polls`
 --
 ALTER TABLE `polls`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `poll_answers`
 --
 ALTER TABLE `poll_answers`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `poll_votes`
 --
 ALTER TABLE `poll_votes`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

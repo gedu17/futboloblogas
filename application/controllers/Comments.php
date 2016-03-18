@@ -14,9 +14,9 @@ class Comments extends CI_Controller {
     public function create($id)
     {
         $uid = "";
-        if(isset($_SESSION['user_id']))
+        if($this->nativesession->get('user_id') !== NULL)
         {
-            $uid = $_SESSION['user_id'];
+            $uid = $this->nativesession->get('user_id');
         }
         
         $comment = $this->input->post('comment');

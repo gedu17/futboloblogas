@@ -1,56 +1,57 @@
-<div class="contentContainer">
-    <div class="contentContainerTitle">
-        Apklausų tvarkymas
-    </div>
-    <div class="contentContainerContent">
-        <br />
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Pavadinimas</th>
-                <th>Atsakymų skaičius</th>
-                <th>Aktyvus</th>
-                <th>Veiksmai</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php 
-            $i = 1;
-            foreach($polls as $item) {
-            ?>
-            <tr>
-                <td><?=$i;?></td>
-                <td><a href="<?=site_url('admin/poll/edit/'.$item->id);?>"><?=$item->name;?></a></td>
-                <td><?=$item->answer_count;?></td>
-                <td>
+<div class="col-sm-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Apklausų tvarkymas</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pavadinimas</th>
+                        <th>Atsakymų skaičius</th>
+                        <th>Aktyvus</th>
+                        <th>Veiksmai</th>
+                    </tr>
+                </thead>
+                <tbody>
                 <?php 
-                if($item->active == 0) {
+                $i = 1;
+                foreach($polls as $item) {
                 ?>
-                    <a href="<?=site_url('admin/poll/activate/'.$item->id);?>">
-                        <button type="button" class="btn btn-xs btn-default">Aktyvuoti</button></a>
+                    <tr>
+                        <td><?=$i;?></td>
+                        <td><a href="<?=site_url('admin/poll/edit/'.$item->id);?>"><?=$item->name;?></a></td>
+                        <td><?=$item->answer_count;?></td>
+                        <td>
+                        <?php 
+                        if($item->active == 0) {
+                        ?>
+                            <a href="<?=site_url('admin/poll/activate/'.$item->id);?>">
+                                <button type="button" class="btn btn-xs btn-default">Aktyvuoti</button></a>
+                        <?php 
+                        } else {
+                        ?>
+                            <button type="button" class="btn btn-xs btn-default" disabled>Aktyvus</button>
+                        <?php
+                        } 
+                        ?>
+                        </td>
+                        <td><a href="<?=site_url('admin/poll/edit/'.$item->id);?>">
+                                <button type="button" class="btn btn-xs btn-default">Taisyti</button></a>
+                            <?php if($item->active == 0) { ?>
+                            <a href="<?=site_url('admin/poll/delete/'.$item->id);?>">
+                                <button type="button" class="btn btn-xs btn-default">Ištrinti</button></a>
+                            <?php } ?> 
+                        </td>
+                    </tr>
+
                 <?php 
-                } else {
-                ?>
-                    <button type="button" class="btn btn-xs btn-default" disabled>Aktyvus</button>
-                <?php
-                } 
-                ?>
-                </td>
-                <td><a href="<?=site_url('admin/poll/edit/'.$item->id);?>">
-                        <button type="button" class="btn btn-xs btn-default">Taisyti</button></a>
-                    <?php if($item->active == 0) { ?>
-                    <a href="<?=site_url('admin/poll/delete/'.$item->id);?>">
-                        <button type="button" class="btn btn-xs btn-default">Ištrinti</button></a>
-                    <?php } ?> 
-                </td>
-            </tr>
-            
-            <?php 
-            $i++;
-            } ?>
-            </tbody>
-        </table>
+                $i++;
+                } ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+    <hr class="contentContainerHr">
 </div>
-<hr class="contentContainerHr">

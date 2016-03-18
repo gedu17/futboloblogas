@@ -11,6 +11,7 @@ class Posts extends CI_Controller {
         $this->load->model('poll_model');
         $this->load->model('template_data_model');
         $this->load->helper('form');
+        //session_start();
     }
     
     public function index()

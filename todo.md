@@ -13,7 +13,8 @@
 [x] perdaryti votinga su ajaxu
 [x] prideti bootstrap prie inputu
 [ ] pataisyti/pakeisti headerio nuotraukas
-[ ] pagrazint votinimo rezultatus
+[x] pagrazint votinimo rezultatus
+[ ] sulietuvinti klaidu pranesimus formoj
 
 ## PHP
 [x] sukurti users/change-password
@@ -22,9 +23,9 @@
 [x] pollu CRUD
 [x] komentaru CRUD
 [x] useriu valdymas
-[ ] registracijos emailo siuntimas
-[ ] slaptazodzio priminimo emailo siuntimas
-[ ] istestuoti users/create
-[ ] istestuoti users/remind_password
+[x] registracijos emailo siuntimas
+[x] slaptazodzio priminimo emailo siuntimas
+[x] istestuoti users/create
+[x] istestuoti users/remind_password
 [x] temp id idejimas i db prisiloginus
 [x] visuose admin post funkcijose ties post veiksmu pridet notadmin redirecta

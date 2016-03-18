@@ -43,8 +43,8 @@ function managePollAnswers()
 function vote()
 {
     $('#voteButton').click(function(){
-        $.post("poll/vote", { "poll": $('input[name=poll]:checked').val()}).done(function(){
-           $.ajax("poll/view").done(function(data){
+        $.post("/poll/vote", { "poll": $('input[name=poll]:checked').val()}).done(function(){
+           $.ajax("/poll/view").done(function(data){
                 $('#pollItems').remove();
                 $('#pollVote').remove();
                 $('#pollBar').append(data);

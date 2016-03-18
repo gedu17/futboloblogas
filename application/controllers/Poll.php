@@ -14,7 +14,7 @@ class Poll extends CI_Controller {
     public function vote()
     {
         $uid = $this->users_model->get_uid();
-        if(isset($_SESSION['logged_in']) && $uid > 0)
+        if($this->nativesession->get('logged_in') !== NULL && $uid > 0)
         {
             $voted = $this->poll_model->did_vote($uid);
             if(!$voted)

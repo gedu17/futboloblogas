@@ -17,7 +17,7 @@ class Template_data_model extends CI_Model {
     
     public function use_user()
     {
-        $this->array['logged_in'] = isset($_SESSION['logged_in']);
+        $this->array['logged_in'] = $this->nativesession->get('logged_in') === NULL ? false : true;
         $this->array['username'] = $this->users_model->get_username();
         $this->array['user_level'] = $this->users_model->get_user_level();        
     }

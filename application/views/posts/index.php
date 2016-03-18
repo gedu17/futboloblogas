@@ -1,4 +1,7 @@
-<?php foreach ($posts as $post): ?>
+<?php 
+foreach ($posts as $post)   
+{ 
+?>
 <div class="contentContainer">
     <div class="contentContainerTitle">
         <a href="<?php echo site_url('posts/'.$post->id); ?>" class="contentContainerTitle"><?=$post->title;?></a>
@@ -20,4 +23,6 @@
     </div>
 </div>
 <hr class="contentContainerHr">
-<?php endforeach; ?>
+<?php 
+}
+?>

@@ -33,9 +33,8 @@ class Users extends CI_Controller {
     
     public function create()
     {
-        $this->load->library('email');
+        //$this->load->library('email');
         $this->users_model->redirect_lin();
-        
         
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -68,30 +67,43 @@ class Users extends CI_Controller {
             $act_code = $this->users_model->create($this->input->post('username'),
                     $this->input->post('password'), $this->input->post('email'));
             
-            $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
+            /*$this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
             $this->email->to($this->input->post('email')); 
-            //$this->email->cc('another@another-example.com'); 
-            //$this->email->bcc('them@their-example.com'); 
 
-            $this->email->subject('Registracija puslapyje FutboloBlogas.lt');
+            $this->email->subject('Registracija puslapyje FutboloBlogas.lt');*/
             $msg = "Sveiki, ".$this->input->post('username').". \n\n".
-                    "Jūsų aktyvacijos nuoroda <a href=\"".
-                    site_url('users/activate/'.$act_code)."\">".
-                    site_url('users/activate/'.$act_code)."</a>";
-            $this->email->message($msg);	
+                    "Jūsų aktyvacijos nuoroda ".
+                    site_url('users/activate/'.$act_code);
+            $this->users_model->send_email($this->input->post('email'), 
+                    'Registracija puslapyje FutboloBlogas.lt', $msg);
+            /*$this->email->message($msg);	
 
-            $this->email->send();
-
-            echo $this->email->print_debugger();
-            /*$this->news_model->set_news();
-            $this->load->view('news/success');*/
+            $this->email->send();*/
         }
     }
     
     public function activate($code)
     {
         $this->users_model->redirect_lin();
-        echo "KODAS YRA ".$code;
+        $status = $this->users_model->try_activate($code);
+        
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $this->template_data_model->use_register();
+        $data = $this->template_data_model->get_data();
+        $this->load->view('templates/header', $data);
+        
+        if($status)
+        {
+            $this->load->view('users/activated');
+        }
+        else
+        {
+            $this->load->view('users/not_activated');
+        }
+        
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/footer');
     }
     
     public function remind_password()
@@ -118,27 +130,82 @@ class Users extends CI_Controller {
         else
         {
             $this->users_model->redirect_lin();
-            //TODO: UNCOMMENT ME
-            /*$code = password_hash(time()+"_"+$this->input->post('username')+"_"+
-                    $this->input->post('email'), PASSWORD_DEFAULT);
-            //TODO: add code to db
-            $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
-            $this->email->to($this->input->post('email')); 
-
-            $this->email->subject('Registracija puslapyje FutboloBlogas.lt');
+            $code = $this->users_model->set_recovery_hash($this->input->post('email'));
             $msg = "Sveiki, ".$this->input->post('username').". \n\n".
-                    "Nuoroda slaptažodžio atstatymui yra <a href=\"".
-                    site_url('users/restore_password/'.$code)."\">".
-                    site_url('users/restore_password/'.$code)."</a>. \n".
+                    "Jūsų slaptažodžio atstatymo nuoroda ".
+                    site_url('users/restore_password/'.$code)." \n".
                     "Jeigu neprašėte slaptažodžio atstatymo, ignoruokite šį laišką.";
-            $this->email->message($msg);	
-
-            $this->email->send();
-
-            echo $this->email->print_debugger();*/
+            $this->users_model->send_email($this->input->post('email'), 
+                    'Slaptažodžio atstatymas puslapyje FutboloBlogas.lt', $msg);
             
             $this->load->view('templates/header', $data);
             $this->load->view('users/password_reminded');
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('templates/footer');
+        }
+    }
+    
+    public function restore_password($code = NULL)
+    {
+        if($code == NULL)
+        {
+            $this->users_model->redirect_lin();
+            $this->users_model->redirect_nlin();
+        }
+        $this->users_model->redirect_lin();
+        
+        $temp_id = $this->users_model->recover_get_tempid($code);
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $this->template_data_model->use_register();
+        $data = $this->template_data_model->get_data();
+        $this->load->view('templates/header', $data);
+        //$data['recover_user_id'] = $this->users_model->recover_get_tempid($code);
+        if($temp_id != "")
+        {
+            $data['recover_user_id'] = $temp_id;
+            
+            $this->users_model->remove_recovery_hash($temp_id);
+            
+            $this->load->view('users/remind_new_password', $data);
+        }
+        else
+        {
+            $this->load->view('users/remind_hash_not_found');
+        }
+        
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/footer');
+    }
+    
+    public function recover_password()
+    {
+        $this->users_model->redirect_lin();
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+
+        $this->template_data_model->use_user();
+        $this->template_data_model->use_poll();
+        $data = $this->template_data_model->get_data();
+        
+        //$this->form_validation->set_rules('oldpassword', 'Dabartinis slaptažodis', 'callback_current_password');
+        $this->form_validation->set_rules('password', 'Naujas slaptažodis', 'matches[passconf]');
+        $this->form_validation->set_rules('passconf', 'Naujo slaptažodžio pakartojimas', 'matches[password]');
+        $data['recover_user_id'] = $this->input->post('user_id');
+        if ($this->form_validation->run() === FALSE)
+        {
+            $this->load->view('templates/header', $data);
+            $this->load->view('users/remind_new_password', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('templates/footer');
+        }
+        else
+        {
+            $this->users_model->redirect_lin();
+            $this->users_model->recover_password($this->input->post('user_id'), $this->input->post('password'));
+            
+            $this->load->view('templates/header', $data);
+            $this->load->view('users/password_changed');
             $this->load->view('templates/sidebar', $data);
             $this->load->view('templates/footer');
         }

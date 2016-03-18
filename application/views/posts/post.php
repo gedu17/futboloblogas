@@ -12,9 +12,13 @@
 </div>
 <hr class="contentContainerHr">
 <div id="contentComments">
-    <a name="comments"><div id="contentCommentsTitle"><?php
+    <a name="comments">
+        <div id="contentCommentsTitle">
+        <?php
             echo $post->comments;
             echo " ";
             echo call_user_func(array("Posts", "get_comment_text"), $post->comments);
-            ?></div></a>
+            ?>
+        </div>
+    </a>
     <div id="contentCommentsComments">

@@ -5,6 +5,7 @@ class Users_model extends CI_Model {
     public function __construct()
     {
         $this->load->database();
+        $this->load->library('encryption');
     }
     
     public function login($username, $password)
@@ -15,13 +16,11 @@ class Users_model extends CI_Model {
             $result = $q->result();
             if(password_verify($password, $result[0]->password))
             {
-                $temp_id = password_hash(time()+"_"+$username+"_userid", PASSWORD_DEFAULT);
+                $temp_id = $this->get_hash();
                 $this->db->where('id', $result[0]->id);
                 $this->db->update('users', array('temp_id' => $temp_id));
-                $_SESSION['logged_in'] = true;
-                $_SESSION['user_id'] = $temp_id;
-                //$this->session->set_userdata('logged_in', true);
-                //$this->session->set_userdata('user_id', $temp_id);
+                $this->nativesession->set('logged_in', true);
+                $this->nativesession->set('user_id', $temp_id);
                 return true;
             }
         }
@@ -30,10 +29,8 @@ class Users_model extends CI_Model {
     
     public function logout()
     {
-        //$this->session->unset_userdata('logged_in');
-        //$this->session->unset_userdata('user_id');
-        unset($_SESSION['logged_in']);
-        unset($_SESSION['user_id']);
+        $this->nativesession->delete('logged_in');
+        $this->nativesession->delete('user_id');
     }
     
     public function check_username($str)
@@ -48,7 +45,7 @@ class Users_model extends CI_Model {
     
     public function check_password($password)
     {
-        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0 && password_verify($password, $res[0]->password))
         {
@@ -69,34 +66,101 @@ class Users_model extends CI_Model {
     
     public function create($username, $password, $email)
     {
-        $act_code = password_hash(time()+"_"+$username+"_ach",
-                        PASSWORD_DEFAULT);
+        /*$act_code = password_hash(time()+"_"+$username+"_ach",
+                        PASSWORD_DEFAULT);*/
+        //$act_code = bin2hex($this->encryption->create_key(32));
+        $act_code = $this->get_hash();
         $data = array(
                 'username' => $username,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
                 'email' => $email,
                 'level' => 1,
                 'activation_code' => $act_code,
-                'temp_id' => '',
+                'temp_id' => $this->get_hash(),
                 'active' => 0
         );
         $this->db->insert('users', $data);
         return $act_code;
     }
     
+    public function get_hash()
+    {
+        return bin2hex($this->encryption->create_key(32));
+    }
+    
+    public function recover_get_tempid($code)
+    {
+        $q = $this->db->get_where('users', array("password_recovery" => $code));
+        $res = $q->result();
+        if(count($res) > 0)
+        {
+            return $res[0]->temp_id;
+        }
+        return "";
+    }
+    
+    public function recover_password($uid, $password)
+    {
+        $this->db->where('temp_id', $uid);
+        $this->db->update('users', array('password' => password_hash($password, PASSWORD_DEFAULT)));
+    }
+    
+    public function remove_recovery_hash($uid)
+    {
+        $this->db->where('temp_id', $uid);
+        //TODO: add timer for next recovery?
+        $this->db->update('users', array('password_recovery' => ''));
+    }
+    
+    public function try_activate($code)
+    {
+        
+       $q = $this->db->get_where('users', array('activation_code' => $code));
+       $res = $q->result();
+       if(count($res) > 0 && $res[0]->active == 0)
+       {
+           $this->db->where('activation_code', $code);
+           $this->db->update('users', array('active' => 1));
+           return true;
+       }
+       else
+       {
+           return false;
+       }
+    }
+    
+    public function set_recovery_hash($email)
+    {
+        $code = $this->get_hash();
+        $this->db->where('email', $email);
+        $this->db->update('users', array('password_recovery' => $code));
+        return $code;
+    }
+    
+    public function send_email($email, $title, $msg)
+    {
+        $this->load->library('email');
+        $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
+        $this->email->to($email); 
+
+        $this->email->subject($title);
+        $this->email->message($msg);	
+
+        $this->email->send();
+    }
+    
     public function change_password($password)
     {
-        $this->db->where('temp_id', $_SESSION['user_id']);
+        $this->db->where('temp_id', $this->nativesession->get('user_id'));
         $this->db->update('users', array('password' => password_hash($password, PASSWORD_DEFAULT)));
     }
     
     public function get_username()
     {
-        //$this->session->userdata('user_id')
-        if(isset($_SESSION['user_id']))
+        if($this->nativesession->get('user_id') !== NULL)
         {
             $username = $this->db->get_where('users', array('temp_id' => 
-            $_SESSION['user_id']));
+            $this->nativesession->get('user_id')));
             $res = $username->result();
             if(count($res) > 0) {
                 return $res[0]->username;
@@ -107,11 +171,11 @@ class Users_model extends CI_Model {
     
     public function get_uid()
     {
-        if(!isset($_SESSION['user_id']))
+        if($this->nativesession->get('user_id') === NULL)
         {
             return 0;
         }
-        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0)
         {
@@ -121,11 +185,11 @@ class Users_model extends CI_Model {
     
     public function get_user_level()
     {
-        if(!isset($_SESSION['user_id']))
+        if($this->nativesession->get('user_id') === NULL)
         {
             return 1;
         }
-        $q = $this->db->get_where('users', array('temp_id' => $_SESSION['user_id']));
+        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0)
         {
@@ -161,17 +225,18 @@ class Users_model extends CI_Model {
     }
     
     //Logged in user
-    public function redirect_lin()//loggedin_user()
+    public function redirect_lin()
     {
-        if(isset($_SESSION['logged_in']))
+        if($this->nativesession->get('logged_in') !== NULL)
         {
+            
             redirect(base_url(), 'location');
         }
     }
     //Not logged in user
     public function redirect_nlin()
     {
-        if(!isset($_SESSION['logged_in']))
+        if($this->nativesession->get('logged_in') === NULL)
         {
             redirect(base_url(), 'location');
         }

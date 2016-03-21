@@ -1,0 +1,3 @@
+Options +FollowSymlinks
+RewriteEngine on
+RewriteRule ^(.*)/([0-9]+)$ index.php?method=$1&id=$2 [L]

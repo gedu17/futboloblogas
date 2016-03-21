@@ -12,9 +12,8 @@
 [x] bootstrap
 [x] perdaryti votinga su ajaxu
 [x] prideti bootstrap prie inputu
-[ ] pataisyti/pakeisti headerio nuotraukas
 [x] pagrazint votinimo rezultatus
-[ ] sulietuvinti klaidu pranesimus formoj
+[ ] pataisyti/pakeisti headerio nuotraukas
 
 ## PHP
 [x] sukurti users/change-password
@@ -29,3 +28,4 @@
 [x] istestuoti users/remind_password
 [x] temp id idejimas i db prisiloginus
 [x] visuose admin post funkcijose ties post veiksmu pridet notadmin redirecta
+[x] refactor code

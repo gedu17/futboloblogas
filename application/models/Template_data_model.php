@@ -3,11 +3,8 @@
 class Template_data_model extends CI_Model {
     public function __construct()
     {
+        parent::__construct();
         $this->load->database();
-        $this->load->model('users_model');
-        $this->load->model('poll_model');
-        $this->load->model('posts_model');
-        $this->load->model('comments_model');
         $this->array = array();
         //TODO: FIX
         $this->array['title'] = "Futbolo blogas";
@@ -35,7 +32,7 @@ class Template_data_model extends CI_Model {
     
     public function use_comments($id)
     {
-        $this->array['comments'] = $this->comments_model->get_comments($id, 0, 15);
+        $this->array['comments'] = $this->comments_model->get_comments($id);
     }
     
     public function use_register()

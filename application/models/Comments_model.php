@@ -7,45 +7,43 @@ class Comments_model extends CI_Model {
         $this->load->database();
     }
     
-    public function get_comments($post_id, $offset, $limit)
+    /* Admin actions */
+    
+    public function delete_comment($id, $user_id)
+    {
+        //$this->db->where('id', $id);
+        //$this->db->delete('comments');
+        $url = base_url()."/api/comments/delete/".$id;
+        $data = array('userid' => $user_id);
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($curl);
+        curl_close($curl);
+    }
+    
+    /* Public actions */
+    public function get_comments($post_id)
     {        
-        $query = $this->db->order_by('date', 'DESC')->
-                get_where('comments', array('post_id' => $post_id), $offset, $limit);
-        $res = $query->result();
-        foreach ($res as $item)
-        {
-            $q = $this->db->get_where('users', array('id' => $item->user_id))->result();
-            if(count($q) > 0)
-            {
-                $item->user = $q[0]->username;
-            }
-            else
-            {
-                $item->user = "Anonimas";
-            }
-        }
-        
-        return $res;
+        $api = base_url()."/api/comments/list/".$post_id;
+        $data = file_get_contents($api);
+        return json_decode($data);
     }
     
     public function post_comment($post_id, $user_id, $comment)
     {
-        $real_user_id = $this->db->get_where('users', array('temp_id' => $user_id));
-        $tmp = $real_user_id->result();
-        $data = array(
-                'date' => time(),
-                'text' => $comment,
-                'user_id' => $tmp[0]->id,
-                'post_id' => $post_id
-        );
-        $this->db->insert('comments', $data);
+        $url = base_url()."/api/comments/create/".$post_id;
+        $data = array('userid' => $user_id, 'comment' => $comment);
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($curl);
+        curl_close($curl);
     }
     
-    public function delete_comment($id)
-    {
-        $this->db->where('id', $id);
-        $this->db->delete('comments');
-    }
+    /* Helpers */
     
     public function check_comment($uid, $pid)
     {

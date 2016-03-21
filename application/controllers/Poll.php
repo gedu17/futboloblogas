@@ -1,15 +1,12 @@
 <?php
 
 class Poll extends CI_Controller {
+    
     public function __construct() {
         parent::__construct();
-        $this->load->helper('url_helper');
-        $this->load->model('comments_model');
-        $this->load->model('users_model');
-        $this->load->model('poll_model');
-        $this->load->helper('form');
-        $this->load->model('template_data_model');
     }
+    
+    /* Public views */
     
     public function vote()
     {
@@ -31,36 +28,31 @@ class Poll extends CI_Controller {
         $this->load->view('poll/view', $data);
     }
     
+    /* Admin views */
+    
     public function create()
     {
-        $this->users_model->redirect_na();
-        $this->load->helper('form');
-        $this->load->library('form_validation');
-
+        $this->users_model->redirect_na();     
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
         $data = $this->template_data_model->get_data();
-        
         $this->form_validation->set_rules('name', 'Klausimas', 'required');
-        
+        $this->load->view('templates/header', $data);
         if ($this->form_validation->run() === FALSE)
         {
-            $this->load->view('templates/header', $data);
             $this->load->view('poll/create', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/footer');
         }
         else
         {
-            $this->users_model->redirect_na();
             $poll_answers = array();
             for($i = 1; $i < $this->input->post('answersCount')+1; $i++)
             {
                 array_push($poll_answers, $this->input->post('pollAnswer_'.$i));
             }
             $this->poll_model->add_poll($this->input->post('name'), $poll_answers);
-            redirect(site_url('admin/poll/manage'), 'location');
         }
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/footer');
     }
     
     public function manage()
@@ -81,42 +73,31 @@ class Poll extends CI_Controller {
     {
         $this->users_model->redirect_na();
         $this->poll_model->activate($id);
-        redirect(site_url('admin/poll/manage'), 'location');
     }
     
     public function delete($id)
     {
         $this->users_model->redirect_na();
         $this->poll_model->delete_poll($id);
-        redirect(site_url('admin/poll/manage'), 'location');
     }
     
     public function edit($id)
     {
-        $this->users_model->redirect_na();
-        $this->load->helper('form');
-        $this->load->library('form_validation');
-        
+        $this->users_model->redirect_na();        
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
         $data = $this->template_data_model->get_data();
-        
         $data['poll_name'] = $this->poll_model->get_poll_name($id);
         $data['poll_answers'] = $this->poll_model->get_poll_answers($id);
         $data['poll_id'] = $id;
-        
         $this->form_validation->set_rules('name', 'Pavadinimas', 'required');
-        
+        $this->load->view('templates/header', $data);
         if ($this->form_validation->run() === FALSE)
         {
-            $this->load->view('templates/header', $data);
             $this->load->view('poll/edit', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/footer');
         }
         else
         {
-            $this->users_model->redirect_na();
             $poll_answers = array();
             foreach($this->input->post(NULL, TRUE) as $key => $value) {
                 $tmpid = explode('_', $key);
@@ -125,7 +106,8 @@ class Poll extends CI_Controller {
             }
             $this->poll_model->update_poll($this->input->post('name'), 
                     $poll_answers, $id);
-            redirect(site_url('admin/poll/manage'), 'location');
         }
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/footer');
     }
 }

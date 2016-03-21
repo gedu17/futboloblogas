@@ -4,9 +4,11 @@ class Users_model extends CI_Model {
     
     public function __construct()
     {
+        parent::__construct();
         $this->load->database();
-        $this->load->library('encryption');
     }
+    
+    /* User actions */
     
     public function login($username, $password)
     {
@@ -33,6 +35,47 @@ class Users_model extends CI_Model {
         $this->nativesession->delete('user_id');
     }
     
+    public function create($username, $password, $email)
+    {
+        $act_code = $this->get_hash();
+        $data = array(
+                'username' => $username,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'email' => $email,
+                'level' => 1,
+                'activation_code' => $act_code,
+                'temp_id' => $this->get_hash(),
+                'active' => 0
+        );
+        $this->db->insert('users', $data);
+        return $act_code;
+    }
+    
+    public function change_password($password)
+    {
+        $this->db->where('temp_id', $this->nativesession->get('user_id'));
+        $this->db->update('users', array('password' => 
+            password_hash($password, PASSWORD_DEFAULT)));
+    }
+    
+    public function activate($code)
+    {
+       $q = $this->db->get_where('users', array('activation_code' => $code));
+       $res = $q->result();
+       if(count($res) > 0 && $res[0]->active == 0)
+       {
+           $this->db->where('activation_code', $code);
+           $this->db->update('users', array('active' => 1));
+           return true;
+       }
+       else
+       {
+           return false;
+       }
+    }
+    
+    /* Checkers */
+    
     public function check_username($str)
     {
         $q = $this->db->get_where('users', array('username' => $str));
@@ -45,7 +88,8 @@ class Users_model extends CI_Model {
     
     public function check_password($password)
     {
-        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
+        $q = $this->db->get_where('users', array('temp_id' => 
+            $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0 && password_verify($password, $res[0]->password))
         {
@@ -62,30 +106,30 @@ class Users_model extends CI_Model {
             return true;
         }
         return false;
+    }   
+    
+    /* Recovery */
+    
+    public function set_recovery_hash($email)
+    {
+        $code = $this->get_hash();
+        $this->db->where('email', $email);
+        $this->db->update('users', array('password_recovery' => $code));
+        return $code;
     }
     
-    public function create($username, $password, $email)
+    public function recover_password($uid, $password)
     {
-        /*$act_code = password_hash(time()+"_"+$username+"_ach",
-                        PASSWORD_DEFAULT);*/
-        //$act_code = bin2hex($this->encryption->create_key(32));
-        $act_code = $this->get_hash();
-        $data = array(
-                'username' => $username,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'email' => $email,
-                'level' => 1,
-                'activation_code' => $act_code,
-                'temp_id' => $this->get_hash(),
-                'active' => 0
-        );
-        $this->db->insert('users', $data);
-        return $act_code;
+        $this->db->where('temp_id', $uid);
+        $this->db->update('users', array('password' => 
+            password_hash($password, PASSWORD_DEFAULT)));
     }
     
-    public function get_hash()
+    public function remove_recovery_hash($uid)
     {
-        return bin2hex($this->encryption->create_key(32));
+        $this->db->where('temp_id', $uid);
+        //TODO: add timer for next recovery?
+        $this->db->update('users', array('password_recovery' => ''));
     }
     
     public function recover_get_tempid($code)
@@ -99,61 +143,7 @@ class Users_model extends CI_Model {
         return "";
     }
     
-    public function recover_password($uid, $password)
-    {
-        $this->db->where('temp_id', $uid);
-        $this->db->update('users', array('password' => password_hash($password, PASSWORD_DEFAULT)));
-    }
-    
-    public function remove_recovery_hash($uid)
-    {
-        $this->db->where('temp_id', $uid);
-        //TODO: add timer for next recovery?
-        $this->db->update('users', array('password_recovery' => ''));
-    }
-    
-    public function try_activate($code)
-    {
-        
-       $q = $this->db->get_where('users', array('activation_code' => $code));
-       $res = $q->result();
-       if(count($res) > 0 && $res[0]->active == 0)
-       {
-           $this->db->where('activation_code', $code);
-           $this->db->update('users', array('active' => 1));
-           return true;
-       }
-       else
-       {
-           return false;
-       }
-    }
-    
-    public function set_recovery_hash($email)
-    {
-        $code = $this->get_hash();
-        $this->db->where('email', $email);
-        $this->db->update('users', array('password_recovery' => $code));
-        return $code;
-    }
-    
-    public function send_email($email, $title, $msg)
-    {
-        $this->load->library('email');
-        $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
-        $this->email->to($email); 
-
-        $this->email->subject($title);
-        $this->email->message($msg);	
-
-        $this->email->send();
-    }
-    
-    public function change_password($password)
-    {
-        $this->db->where('temp_id', $this->nativesession->get('user_id'));
-        $this->db->update('users', array('password' => password_hash($password, PASSWORD_DEFAULT)));
-    }
+    /* Getters */
     
     public function get_username()
     {
@@ -175,7 +165,8 @@ class Users_model extends CI_Model {
         {
             return 0;
         }
-        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
+        $q = $this->db->get_where('users', array('temp_id' => 
+            $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0)
         {
@@ -189,7 +180,8 @@ class Users_model extends CI_Model {
         {
             return 1;
         }
-        $q = $this->db->get_where('users', array('temp_id' => $this->nativesession->get('user_id')));
+        $q = $this->db->get_where('users', array('temp_id' => 
+            $this->nativesession->get('user_id')));
         $res = $q->result();
         if(count($res) > 0)
         {
@@ -197,10 +189,24 @@ class Users_model extends CI_Model {
         }
     }
     
+    public function get_users()
+    {
+        $q = $this->db->get('users');
+        return $q->result();
+    }
+    
+    public function get_hash()
+    {
+        return bin2hex($this->encryption->create_key(32));
+    }
+    
+    /* Admin actions */
+    
     public function delete_user($id)
     {
         $this->db->where('id', $id);
         $this->db->delete('users');
+        $this->redirect_manage();
     }
     
     public function activate_user($id)
@@ -208,6 +214,7 @@ class Users_model extends CI_Model {
         $data = array('active' => 1);
         $this->db->where('id', $id);
         $this->db->update('users', $data);
+        $this->redirect_manage();
     }
     
     public function deactivate_user($id)
@@ -215,39 +222,70 @@ class Users_model extends CI_Model {
         $data = array('active' => 0);
         $this->db->where('id', $id);
         $this->db->update('users', $data);
+        $this->redirect_manage();
     }
     
-    public function get_users()
+    /* Helpers */
+    
+    public function send_email($email, $title, $msg)
     {
-        $q = $this->db->get('users');
-        return $q->result();
-        
+        $this->email->from('no-reply@futboloblogas.lt', 'FutboloBlogas.lt');
+        $this->email->to($email); 
+        $this->email->subject($title);
+        $this->email->message($msg);	
+        $this->email->send();
     }
+    
+    public function register($username, $password, $email)
+    {
+        $act_code = $this->users_model->create($username, $password, $email);
+            $msg = "Sveiki, ".$username.". \n\n".
+                "Jūsų aktyvacijos nuoroda ".
+                site_url('users/activate/'.$act_code);
+            $this->users_model->send_email($email, 
+                'Registracija puslapyje FutboloBlogas.lt', $msg);
+    }
+    
+    public function remind_password($username, $email)
+    {
+        $code = $this->users_model->set_recovery_hash($email);
+            $msg = "Sveiki, ".$username.". \n\n".
+                "Jūsų slaptažodžio atstatymo nuoroda ".
+                site_url('users/restore_password/'.$code)." \n".
+                "Jeigu neprašėte slaptažodžio atstatymo, ignoruokite šį laišką.";
+            $this->users_model->send_email($email, 
+                'Slaptažodžio atstatymas puslapyje FutboloBlogas.lt', $msg);
+    }
+    
+    /* Redirects */
     
     //Logged in user
     public function redirect_lin()
     {
-        if($this->nativesession->get('logged_in') !== NULL)
-        {
-            
-            redirect(base_url(), 'location');
-        }
+        return $this->nativesession->get('logged_in') !== NULL ? 
+                redirect(base_url(), 'location') : NULL;
     }
     //Not logged in user
     public function redirect_nlin()
     {
-        if($this->nativesession->get('logged_in') === NULL)
-        {
-            redirect(base_url(), 'location');
-        }
+        return $this->nativesession->get('logged_in') === NULL ?
+            redirect(base_url(), 'location') : NULL;
     }
     
     //User without admin privilleges
     public function redirect_na()
     {
-        if($this->get_user_level() != 9)
-        {
-            redirect(base_url(), 'location');
-        }
+        return $this->get_user_level() != 9 ? redirect(base_url(), 'location') 
+                : NULL;
+    }
+    
+    public function redirect_all()
+    {
+        redirect(base_url(), 'location');
+    }
+    
+    public function redirect_manage()
+    {
+        redirect(site_url('admin/users/manage'), 'location');
     }
 }

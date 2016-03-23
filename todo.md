@@ -13,7 +13,7 @@
 [x] perdaryti votinga su ajaxu
 [x] prideti bootstrap prie inputu
 [x] pagrazint votinimo rezultatus
-[ ] pataisyti/pakeisti headerio nuotraukas
+[x] pataisyti/pakeisti headerio nuotraukas
 
 ## PHP
 [x] sukurti users/change-password

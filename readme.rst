@@ -31,10 +31,10 @@ JQuery
 Licenzija
 *********
 
-[GPL 3.0](http://www.gnu.org/licenses/gpl-3.0.en.html)
+http://www.gnu.org/licenses/gpl-3.0.en.html
 
 *********
 Nuotrauka
 *********
 
-![alt text](https://raw.githubusercontent.com/kankanas/futboloblogas/master/screenshot.jpg "Nuotrauka")
+https://raw.githubusercontent.com/kankanas/futboloblogas/master/screenshot.jpg

@@ -64,8 +64,13 @@ class Poll_model extends CI_Model {
     public function vote($uid, $answer)
     {
         $poll = $this->get_current_poll();
-        $data = array('poll' => $poll, 'uid' => $uid, 'answer' => $answer);
-        $this->db->insert('poll_votes', $data);
+        $q = $this->db->get_where('poll_answers', array('id' => $answer, 'poll' => $poll));
+        $res = $q->result();
+        if(count($res) === 1)
+        {
+            $data = array('poll' => $poll, 'uid' => $uid, 'answer' => $answer);
+            $this->db->insert('poll_votes', $data);
+        }
     }
     
     /* Getters */

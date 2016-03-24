@@ -33,18 +33,32 @@ class Comments
     public function create($id, $userid)
     {
         $comment = filter_input(INPUT_POST, "comment");
-        $q = $this->db->prepare("INSERT INTO `comments` VALUES('', ?, ?, ?, ?)");
-        
-        $q->bind_param("isii", time(), $comment,$id, $userid);
-        $q->execute();
-        header('HTTP/1.1 201 Created');
+        if(!empty($comment))
+        {
+            $q = $this->db->prepare("INSERT INTO `comments` VALUES('', ?, ?, ?, ?)");
+
+            $q->bind_param("isii", time(), $comment,$id, $userid);
+            $q->execute();
+            header('HTTP/1.1 201 Created');
+        }
+        else
+        {
+            header('HTTP/1.1 400 Bad Request');
+        }
     }
     
     public function delete($id)
     {
-        $q = $this->db->prepare("DELETE FROM `comments` WHERE `id` = ? LIMIT 1");
-        $q->bind_param("i", $id);
-        $q->execute();
-        header('HTTP/1.1 200 OK');
+        if(!empty($id) && $id !== 0)
+        {
+            $q = $this->db->prepare("DELETE FROM `comments` WHERE `id` = ? LIMIT 1");
+            $q->bind_param("i", $id);
+            $q->execute();
+            header('HTTP/1.1 200 OK');
+        }
+        else
+        {
+            header('HTTP/1.1 400 Bad Request');
+        }
     }
 }

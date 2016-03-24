@@ -53,10 +53,20 @@ function vote()
     });
 }
 
+function fixHeight()
+{
+    var tmp = $( document ).height() - $('#header').height() - 
+            parseInt($('#content').css('margin-top'));
+    $('#wrapper').height(tmp);
+    $('#content').height(tmp);
+    $('#mainContent').height(tmp);
+}
+
 $(document).ready(function(){
     setInterval(slider, 5000); 
     
     managePollAnswers();
     vote();
+    fixHeight();
 });
 

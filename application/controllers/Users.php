@@ -19,24 +19,24 @@ class Users extends CI_Controller {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
         $this->users_model->login($username, $password);
-        redirect($_SERVER['HTTP_REFERER'], 'location');
     }
     
     public function logout()
     {
         $this->users_model->logout();
-        redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'location');
     }
     
     public function create()
     {
         $this->users_model->redirect_lin();
         $this->form_validation->set_rules('username', 'Vartotojo vardas', 
-                'callback_username_exists');
+                'required|callback_username_exists');
         $this->form_validation->set_rules('password', 'Slaptažodis', 
-                'callback_passwords_match['.$this->input->post('passconf').']');
+                'required|callback_passwords_match['.$this->input->post('passconf').']');
+        $this->form_validation->set_rules('passconf', 'Slaptažodžio pakartojimas',
+                'required');
         $this->form_validation->set_rules('email', 'El. Paštas', 
-                'callback_email_exists');
+                'required|callback_email_exists');
 
         $this->template_data_model->use_user();
         $this->template_data_model->use_poll();
@@ -90,7 +90,9 @@ class Users extends CI_Controller {
         $data = $this->template_data_model->get_data();
         
         $this->form_validation->set_rules('username', 'Vartotojo vardas', 
-                'callback_check_remind_password');
+                'required|callback_check_remind_password');
+        $this->form_validation->set_rules('email', 'El. Paštas', 
+                'required|email');
         $this->load->view('templates/header', $data);
         if ($this->form_validation->run() === FALSE)
         {
@@ -98,13 +100,6 @@ class Users extends CI_Controller {
         }
         else
         {
-            /*$code = $this->users_model->set_recovery_hash($this->input->post('email'));
-            $msg = "Sveiki, ".$this->input->post('username').". \n\n".
-                    "Jūsų slaptažodžio atstatymo nuoroda ".
-                    site_url('users/restore_password/'.$code)." \n".
-                    "Jeigu neprašėte slaptažodžio atstatymo, ignoruokite šį laišką.";
-            $this->users_model->send_email($this->input->post('email'), 
-                    'Slaptažodžio atstatymas puslapyje FutboloBlogas.lt', $msg);*/
             $this->users_model->remind_password($this->input->post('username'),
                     $this->input->post('email'));
             $this->load->view('users/password_reminded');
@@ -150,7 +145,10 @@ class Users extends CI_Controller {
         $data = $this->template_data_model->get_data();
         
         $this->form_validation->set_rules('password', 'Naujas slaptažodis', 
-                'callback_passwords_match['.$this->input->post('passconf').']');
+                'required|callback_passwords_match['.$this->input->post('passconf').']');
+        $this->form_validation->set_rules('passconf', 'Naujo slaptažodžio pakartojimas',
+                'required');
+        $this->form_validation->set_rules('user_id', 'Vartotojo id', 'required');
         $data['recover_user_id'] = $this->input->post('user_id');
         $this->load->view('templates/header', $data);
         if ($this->form_validation->run() === FALSE)
@@ -174,9 +172,12 @@ class Users extends CI_Controller {
         $this->template_data_model->use_poll();
         $data = $this->template_data_model->get_data();
         
-        $this->form_validation->set_rules('oldpassword', 'Dabartinis slaptažodis', 'callback_current_password');
+        $this->form_validation->set_rules('oldpassword', 'Dabartinis slaptažodis', 
+                'required|callback_current_password');
         $this->form_validation->set_rules('password', 'Naujas slaptažodis', 
-                'callback_passwords_match['.$this->input->post('passconf').']');
+                'required|callback_passwords_match['.$this->input->post('passconf').']');
+        $this->form_validation->set_rules('oldpassword', 'Naujo slaptažodžio '
+                . 'pakartojimas', 'required');
         $this->load->view('templates/header', $data);
         if ($this->form_validation->run() === FALSE)
         {

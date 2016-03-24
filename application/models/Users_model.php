@@ -23,16 +23,16 @@ class Users_model extends CI_Model {
                 $this->db->update('users', array('temp_id' => $temp_id));
                 $this->nativesession->set('logged_in', true);
                 $this->nativesession->set('user_id', $temp_id);
-                return true;
             }
         }
-        return false;
+        redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'location');
     }
     
     public function logout()
     {
         $this->nativesession->delete('logged_in');
         $this->nativesession->delete('user_id');
+        redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'location');
     }
     
     public function create($username, $password, $email)

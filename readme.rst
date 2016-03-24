@@ -37,4 +37,4 @@ Licenzija
 Nuotrauka
 *********
 
-https://raw.githubusercontent.com/kankanas/futboloblogas/master/screenshot.jpg
+![screenshot]: https://raw.githubusercontent.com/kankanas/futboloblogas/master/screenshot.jpg "Nuotrauka"

@@ -54,10 +54,10 @@ function vote()
 }
 
 function fixHeight()
-{
-    var tmp = $( document ).height() - $('#header').height() - 
+{    
+    var tmp = $( window ).height() - $('#header').height() - 
             parseInt($('#content').css('margin-top'));
-    $('#wrapper').height(tmp);
+            
     $('#content').height(tmp);
     $('#mainContent').height(tmp);
 }

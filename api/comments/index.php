@@ -1,7 +1,7 @@
 <?php
 include "Router.php";
 include "Comments.php";
-$db = new mysqli("localhost", "pinkpong_g", "KlegsmusPasiniauti", "pinkpong_g");
+$db = new mysqli("localhost", "root", "", "myweb");
 
 if (!$db->connect_errno)
 {

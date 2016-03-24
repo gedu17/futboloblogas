@@ -18,13 +18,12 @@ class Comments
         $q->bind_param("s", $id);
         $q->execute();
         $data = $q->get_result();
-        
         while($tmp = $data->fetch_assoc())
         {
             array_push($return, array('date' => $tmp['date'], 'text' => 
                 $tmp['text'], 'user' => $tmp['username'], 'id' => $tmp['id']));
         }
-        if(count($return) != 0)
+        if(count($return) !== 0)
         {
             echo json_encode($return);    
         }

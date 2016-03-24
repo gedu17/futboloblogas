@@ -6,7 +6,6 @@ class Template_data_model extends CI_Model {
         parent::__construct();
         $this->load->database();
         $this->array = array();
-        //TODO: FIX
         $this->array['title'] = "Futbolo blogas";
         $this->array['slogan'] = "Futbolo blogas - apie futbolo pasaulį";
         $this->array['return_to'] = current_url();

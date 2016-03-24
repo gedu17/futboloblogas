@@ -28,7 +28,14 @@ class Comments_model extends CI_Model {
     {        
         $api = base_url()."/api/comments/list/".$post_id;
         $data = file_get_contents($api);
-        return json_decode($data);
+        if(count($data) > 0)
+        {
+            return json_decode($data);
+        }
+        else
+        {
+            return array();
+        }
     }
     
     public function post_comment($post_id, $user_id, $comment)

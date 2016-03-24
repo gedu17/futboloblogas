@@ -11,11 +11,11 @@ Funkcionalumas
 * Įrašų CRUD
 * Apklausos CRUD
 * Vartotojai
-  * Dviejų kategorijų vartotojai
-  * Vartotojų CRUD
+  ** Dviejų kategorijų vartotojai
+  ** Vartotojų CRUD
 * Komentarai
-  * Implementuoti kaip atskiras web servisas
-  * Komentarų CRUD
+  ** Implementuoti kaip atskiras web servisas
+  ** Komentarų CRUD
 * Bootstrap formom, lentelėm, mygtukam ir laukeliam
 * JQuery balsavimui, puslapio aukščio pakoregavimui, apklausos laukelių kiekiui apklausos kūrime
   
